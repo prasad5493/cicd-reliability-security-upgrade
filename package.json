@@ -1,0 +1,24 @@
+{
+  "name": "cicd-reliability-security-upgrade",
+  "version": "1.0.0",
+  "description": "A CI/CD reliability and security upgrade project demonstrating early quality checks, security validation, approvals, deployment evidence, and rollback workflows.",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "node app/index.js",
+    "test": "jest",
+    "lint": "node --check app/index.js"
+  },
+  "keywords": [
+    "devops",
+    "github-actions",
+    "ci-cd",
+    "security",
+    "rollback",
+    "release-management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^30.0.0"
+  }
+}

@@ -1,0 +1,87 @@
+name: CI - Quality and Security Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  quality-checks:
+    name: Early Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run syntax check
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test
+
+  dependency-review:
+    name: Dependency Security Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  container-security:
+    name: Container Build and Security Scan
+    runs-on: ubuntu-latest
+    needs: quality-checks
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t release-platform-demo:${{ github.sha }} .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: release-platform-demo:${{ github.sha }}
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      - name: Save build evidence
+        run: |
+          mkdir -p evidence
+          echo "Commit: ${{ github.sha }}" > evidence/build-evidence.txt
+          echo "Branch: ${{ github.ref_name }}" >> evidence/build-evidence.txt
+          echo "Quality Checks: Passed" >> evidence/build-evidence.txt
+          echo "Container Security Scan: Passed" >> evidence/build-evidence.txt
+          echo "Generated At: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> evidence/build-evidence.txt
+
+      - name: Upload evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-evidence-${{ github.sha }}
+          path: evidence/
+          retention-days: 30
