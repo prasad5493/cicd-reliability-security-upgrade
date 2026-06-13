@@ -4,6 +4,9 @@ This project demonstrates a practical CI/CD reliability and security upgrade usi
 
 It is focused on improving release confidence through early quality checks, dependency validation, container security scanning, controlled deployment approvals, deployment evidence retention, and repeatable rollback workflows.
 
+Why this project matters?
+In real companies, releasing software without checks is risky. A bad release can break the application, expose security problems, or make it hard to understand what went wrong. This project reduces that risk by moving checks earlier and by making release and rollback steps repeatable.
+
 ## Objectives
 
 - Run quality checks before deployment
@@ -34,37 +37,4 @@ Container Security Scan
 Evidence Artifact
 
 
-## Release Flow 
 
-Manual Release Trigger
-        |
-        v
-Pre-release Validation
-        |
-        v
-Deploy to Staging
-        |
-        v
-Production Approval
-        |
-        v
-Deploy to Production
-        |
-        v
-Deployment Evidence
-
-## Rollback Flow
-
-Manual Rollback Trigger
-        |
-        v
-Select Environment
-        |
-        v
-Select Previous Version
-        |
-        v
-Rollback Execution
-        |
-        v
-Rollback Evidence
